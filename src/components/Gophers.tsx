@@ -6,11 +6,12 @@ import { m, useReducedMotion, useScroll, useTransform } from 'motion/react'
 export function LadderGopher() {
   const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll()
-  // Plain pixels: Motion can't blend 'vh' with calc(), which made the gopher jump to the end.
-  const y = useTransform(scrollYProgress, (p) => {
-    const h = window.innerHeight
-    return h * 0.06 + p * (h * 0.88 - 140)
-  })
+  // Plain pixels (Motion can't blend 'vh' with calc()), and the climb starts below the
+  // 64px sticky header so the gopher never slides underneath it.
+  const TOP = 80
+  const y = useTransform(scrollYProgress, (p) =>
+    typeof window === 'undefined' ? TOP : TOP + p * Math.max(0, window.innerHeight - TOP - 138 - 16),
+  )
   return (
     <m.img
       src="/images/gophers/ladder.svg"
@@ -18,7 +19,7 @@ export function LadderGopher() {
       aria-hidden="true"
       width={44}
       height={138}
-      style={{ y: reduce ? 48 : y }}
+      style={{ y: reduce ? TOP : y }}
       className="pointer-events-none fixed top-0 z-0 hidden w-11 opacity-80 left-[calc(50%+var(--col)/2-0.125rem)] lg:block"
     />
   )

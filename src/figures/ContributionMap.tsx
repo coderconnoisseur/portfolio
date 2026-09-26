@@ -12,7 +12,7 @@ const cellColor = (level: number) =>
 const MONTH = (date: string) =>
   new Date(`${date}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })
 
-type Tip = { left: number; top: number; text: string }
+type Tip = { left: number; top: number; text: string; below: boolean; align: 'start' | 'center' | 'end' }
 
 /** A year of GitHub activity, drawn in the site's own palette. */
 export function ContributionMap({ days }: { days: Day[] }) {
@@ -40,9 +40,16 @@ export function ContributionMap({ days }: { days: Day[] }) {
     const cell = (e.target as HTMLElement).closest<HTMLElement>('[data-date]')
     if (!cell) return setTip(null)
     const count = Number(cell.dataset.count)
+    // The grid sits in a scroll container that clips overflow, so the tooltip flips below
+    // the cell on the top rows and hugs the edge on the first and last weeks.
+    const width = (cell.offsetParent as HTMLElement | null)?.offsetWidth ?? 0
+    const below = cell.offsetTop < 60
+    const align = cell.offsetLeft < 120 ? 'start' : cell.offsetLeft > width - 120 ? 'end' : 'center'
     setTip({
-      left: cell.offsetLeft + cell.offsetWidth / 2,
-      top: cell.offsetTop,
+      left: align === 'start' ? cell.offsetLeft : align === 'end' ? cell.offsetLeft + cell.offsetWidth : cell.offsetLeft + cell.offsetWidth / 2,
+      top: below ? cell.offsetTop + cell.offsetHeight + 6 : cell.offsetTop - 6,
+      below,
+      align,
       text: `${count === 0 ? 'No' : formatNumber(count)} contribution${count === 1 ? '' : 's'} on ${formatDay(cell.dataset.date!)}`,
     })
   }
@@ -110,8 +117,10 @@ export function ContributionMap({ days }: { days: Day[] }) {
           {tip && (
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full bg-ink px-2.5 py-1.5 text-xs whitespace-nowrap text-paper"
-              style={{ left: tip.left, top: tip.top - 6 }}
+              className={`pointer-events-none absolute z-10 bg-ink px-2.5 py-1.5 text-xs whitespace-nowrap text-paper ${
+                tip.below ? '' : '-translate-y-full'
+              } ${tip.align === 'center' ? '-translate-x-1/2' : tip.align === 'end' ? '-translate-x-full' : ''}`}
+              style={{ left: tip.left, top: tip.top }}
             >
               {tip.text}
             </div>

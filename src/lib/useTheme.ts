@@ -6,7 +6,9 @@ export type Theme = 'light' | 'dark'
 const currentTheme = (): Theme => (document.documentElement.dataset.theme === 'light' ? 'light' : 'dark')
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>(currentTheme)
+  // Start from the prerendered default (dark) so hydration matches, then read the real choice.
+  const [theme, setTheme] = useState<Theme>('dark')
+  useEffect(() => setTheme(currentTheme()), [])
 
   useEffect(() => {
     // Keep the browser chrome in step with the page.

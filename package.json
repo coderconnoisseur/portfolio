@@ -7,7 +7,7 @@
     "dev": "vite",
     "snapshot": "node scripts/snapshot-contributions.mjs",
     "prebuild": "node scripts/snapshot-contributions.mjs",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && vite build --ssr src/entry-server.tsx --outDir dist-server && node scripts/prerender.mjs",
     "preview": "vite preview",
     "typecheck": "tsc -b",
     "test": "vitest run",
