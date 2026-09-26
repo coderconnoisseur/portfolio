@@ -1,13 +1,13 @@
 import { ArrowUpRightIcon } from '@phosphor-icons/react'
 import { m, useInView } from 'motion/react'
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { Reveal } from '../components/Reveal.tsx'
 import { Section } from '../components/Section.tsx'
 import { achievements } from '../content/achievements.ts'
 import { about, profile } from '../content/profile.ts'
 import { ContributionMap } from '../figures/ContributionMap.tsx'
 import { summarize } from '../lib/contributions.ts'
-import { formatNumber, plural } from '../lib/format.ts'
+import { formatDay, formatNumber, plural } from '../lib/format.ts'
 import { easeOutExpo, inView } from '../lib/motion.ts'
 import { useContributions } from '../lib/useContributions.ts'
 
@@ -71,29 +71,77 @@ function Stats() {
   )
 }
 
+type Range = '6m' | '1y'
+const ranges: { id: Range; label: string; days: number; phrase: string }[] = [
+  { id: '6m', label: '6 months', days: 183, phrase: 'in the last 6 months' },
+  { id: '1y', label: '1 year', days: 371, phrase: 'in the last year' },
+]
+
 function GitHubCard() {
   const { days } = useContributions()
-  const s = useMemo(() => summarize(days), [days])
+  // Opens on the recent stretch, where the activity is; the full year is one tap away.
+  const [range, setRange] = useState<Range>('6m')
+  const r = ranges.find((x) => x.id === range)!
+  const shown = useMemo(() => days.slice(-r.days), [days, r.days])
+  const s = useMemo(() => summarize(shown), [shown])
+
+  const stats = [
+    { label: 'Contributions', value: formatNumber(s.total) },
+    { label: 'Longest streak', value: plural(s.longestStreak, 'day') },
+    { label: 'Current streak', value: plural(s.currentStreak, 'day') },
+    { label: 'Busiest day', value: s.busiest ? `${s.busiest.count} on ${formatDay(s.busiest.date).replace(/^\w+, /, '').replace(/, \d{4}$/, '')}` : 'Not yet' },
+  ]
+
   return (
     <Reveal className="mt-10">
-      <div className=" border border-rule bg-paper-2/60 p-4 sm:p-6">
-        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-          <h3 className="font-semibold">GitHub activity</h3>
-          <a
-            href={profile.github}
-            target="_blank"
-            rel="noreferrer"
-            className="group inline-flex min-h-6 items-center gap-1 text-sm text-ink-3 hover:text-ink"
-          >
-            @{profile.githubHandle}
-            <ArrowUpRightIcon size={13} weight="bold" aria-hidden="true" className="transition-transform group-hover:-translate-y-px group-hover:translate-x-px" />
-            <span className="sr-only">(opens in a new tab)</span>
-          </a>
+      <div className="border border-rule bg-paper-2/60 p-4 sm:p-6">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-baseline gap-3">
+            <h3 className="font-semibold">GitHub activity</h3>
+            <a
+              href={profile.github}
+              target="_blank"
+              rel="noreferrer"
+              className="group inline-flex min-h-6 items-center gap-1 text-sm text-ink-3 hover:text-ink"
+            >
+              @{profile.githubHandle}
+              <ArrowUpRightIcon size={13} weight="bold" aria-hidden="true" className="transition-transform group-hover:-translate-y-px group-hover:translate-x-px" />
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+          </div>
+          <div role="group" aria-label="Time range" className="flex rounded-full border border-rule p-0.5 text-[0.8125rem]">
+            {ranges.map((x) => (
+              <button
+                key={x.id}
+                type="button"
+                aria-pressed={range === x.id}
+                onClick={() => setRange(x.id)}
+                className={`relative isolate min-h-8 rounded-full px-3 transition-colors duration-200 ${range === x.id ? 'text-paper' : 'text-ink-3 hover:text-ink'}`}
+              >
+                {range === x.id && (
+                  <m.span layoutId="gh-range" className="absolute inset-0 -z-10 rounded-full bg-ink" transition={{ type: 'spring', stiffness: 420, damping: 36 }} />
+                )}
+                {x.label}
+              </button>
+            ))}
+          </div>
         </div>
-        <ContributionMap days={days} />
-        <p className="mt-3 text-[0.8125rem] text-ink-3">
-          <span className="text-ink">{formatNumber(s.total)}</span> contributions in the last year. Longest streak{' '}
-          <span className="text-ink">{plural(s.longestStreak, 'day')}</span>.
+
+        <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-10">
+          <div className="min-w-0 flex-1">
+            <ContributionMap key={range} days={shown} cellMax={range === '6m' ? 24 : undefined} />
+          </div>
+          <dl className="grid grid-cols-2 gap-x-6 gap-y-4 border-rule lg:w-52 lg:shrink-0 lg:grid-cols-1 lg:border-l lg:pl-8">
+            {stats.map((st) => (
+              <div key={st.label}>
+                <dt className="text-[0.75rem] text-ink-3">{st.label}</dt>
+                <dd className="tabular mt-0.5 font-display text-lg font-bold [font-stretch:108%]">{st.value}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+        <p className="sr-only" aria-live="polite">
+          {formatNumber(s.total)} contributions {r.phrase}.
         </p>
       </div>
     </Reveal>

@@ -69,6 +69,11 @@
   --grain-invert: 1;
   --grain-opacity: 0.045;
   --banner-dim: 0.82;
+  --heat-0: #1c2127;
+  --heat-1: #0e4429;
+  --heat-2: #006d32;
+  --heat-3: #26a641;
+  --heat-4: #39d353;
   --col: 72rem;
   color-scheme: dark;
 }
@@ -87,6 +92,11 @@
   --grain-invert: 0;
   --grain-opacity: 0.07;
   --banner-dim: 1;
+  --heat-0: #dfe1dc;
+  --heat-1: #9be9a8;
+  --heat-2: #40c463;
+  --heat-3: #30a14e;
+  --heat-4: #216e39;
   color-scheme: light;
 }
 

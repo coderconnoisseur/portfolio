@@ -3,19 +3,17 @@ import { useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from 'r
 import { summarize, toWeeks, type Day } from '../lib/contributions.ts'
 import { formatDay, formatNumber, plural } from '../lib/format.ts'
 
-const LEVEL_MIX = [0, 32, 55, 78, 100]
-const cellColor = (level: number) =>
-  level === 0
-    ? 'color-mix(in oklab, var(--ink) 7%, transparent)'
-    : `color-mix(in oklab, var(--signal) ${LEVEL_MIX[level]}%, var(--paper-2))`
+// GitHub's contribution greens, per theme (see --heat-* in index.css).
+const LEVELS = [0, 1, 2, 3, 4]
+const cellColor = (level: number) => `var(--heat-${level})`
 
 const MONTH = (date: string) =>
   new Date(`${date}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })
 
 type Tip = { left: number; top: number; text: string; below: boolean; align: 'start' | 'center' | 'end' }
 
-/** A year of GitHub activity, drawn in the site's own palette. */
-export function ContributionMap({ days }: { days: Day[] }) {
+/** GitHub activity as a calendar grid. `cellMax` caps cell size when few weeks are shown. */
+export function ContributionMap({ days, cellMax }: { days: Day[]; cellMax?: number }) {
   const weeks = useMemo(() => toWeeks(days), [days])
   const summary = useMemo(() => summarize(days), [days])
   const wrap = useRef<HTMLDivElement>(null)
@@ -66,6 +64,7 @@ export function ContributionMap({ days }: { days: Day[] }) {
     )
   }
 
+  const columns = `repeat(${weeks.length}, minmax(0, ${cellMax ? `${cellMax}px` : '1fr'}))`
   const first = days[0].date
   const last = days[days.length - 1].date
   const label = `GitHub contribution calendar: ${plural(summary.total, 'contribution')} from ${formatDay(first)} to ${formatDay(last)}. Longest streak ${plural(summary.longestStreak, 'day')}.`
@@ -73,11 +72,11 @@ export function ContributionMap({ days }: { days: Day[] }) {
   return (
     <div ref={wrap}>
       <div ref={scroller} className="overflow-x-auto pb-1">
-        <div className="relative min-w-[40rem]">
+        <div className={`relative ${weeks.length > 30 ? 'min-w-[40rem]' : 'min-w-[22rem]'}`}>
           <div
             aria-hidden="true"
             className="grid text-[0.6875rem] text-ink-3"
-            style={{ gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))` }}
+            style={{ gridTemplateColumns: columns }}
           >
             {months.map((m, i) => (
               <span key={i} className="h-5 overflow-visible whitespace-nowrap">
@@ -93,7 +92,7 @@ export function ContributionMap({ days }: { days: Day[] }) {
             onPointerOver={onOver}
             onPointerLeave={() => setTip(null)}
             className="heat grid gap-[3px] sm:gap-1"
-            style={{ gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))` }}
+            style={{ gridTemplateColumns: columns }}
           >
             {weeks.map((week, col) => (
               <div key={col} className="flex flex-col gap-[3px] sm:gap-1">
@@ -130,7 +129,7 @@ export function ContributionMap({ days }: { days: Day[] }) {
 
       <div aria-hidden="true" className="mt-4 flex items-center justify-end gap-1.5 text-[0.6875rem] text-ink-3">
         <span className="mr-1">Less</span>
-        {LEVEL_MIX.map((_, l) => (
+        {LEVELS.map((l) => (
           <span key={l} className="inline-block size-2.5 shrink-0 rounded-[2px]" style={{ background: cellColor(l) }} />
         ))}
         <span className="ml-1">More</span>
