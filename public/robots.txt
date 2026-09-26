@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://nishantborkar.vercel.app/sitemap.xml
+Sitemap: https://portfolio-sigma-lilac-17.vercel.app/sitemap.xml
