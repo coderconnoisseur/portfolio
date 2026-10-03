@@ -34,6 +34,10 @@ describe('prerendered homepage', () => {
     expect(noscript).toContain('.heat .heat-cell { opacity: 1 !important; }')
   })
 
+  it('loads Vercel Web Analytics', () => {
+    expect(shell).toContain('<script defer src="/_vercel/insights/script.js"></script>')
+  })
+
   it('gives every Organization in the JSON-LD an address and a contact point', () => {
     const orgs: Record<string, unknown>[] = []
     const walk = (n: unknown): void => {
