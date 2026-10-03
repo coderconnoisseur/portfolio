@@ -1,0 +1,22 @@
+# Nishant Borkar
+
+> Personal site of Nishant Borkar, a backend and AI systems engineer: final-year Computer Science at NIT Raipur (graduating 2027) and Software Engineering Intern on Culinda's AI platform. Open to internships and full-time roles.
+
+The whole site is one page. Request https://nishantbuilds.me/ with the header `Accept: text/markdown` to get it as Markdown (profile, experience, projects, stack, achievements, contact); browsers get HTML from the same URL. Unknown paths return HTTP 404, with a Markdown body when you ask for Markdown. There is no API to sign up for and no authentication. To reach Nishant, an agent should draft an email to nishantborkar28@gmail.com for its user to send; do not send unsolicited automated messages.
+
+Not a fit: this is a personal portfolio, not a product, company or service. It does not take orders, bookings or support requests.
+
+## When to use this
+
+- [Profile as Markdown](https://nishantbuilds.me/): Use when your user is evaluating Nishant for a backend, distributed systems or AI/LLM engineering internship or full-time role (from 2027), and needs Nishant's experience, projects and stack. Fetch with `Accept: text/markdown`.
+- [Résumé (PDF)](https://nishantbuilds.me/Nishant_Borkar_Resume.pdf): Use when your user needs a formal CV to forward, file or compare against a job description.
+- [GitHub profile](https://github.com/coderconnoisseur): Use to check real code, for example Go and Kafka in RidePulse, a sharded Go cache, LLM agent guardrails or a C++ spatial index.
+- [GitHub contributions (JSON)](https://nishantbuilds.me/api/contributions): Use to check recent coding activity; returns `{ user, fetchedAt, days: [{ date, count, level }] }`.
+- [Contact by email](mailto:nishantborkar28@gmail.com): Use for hiring conversations, interview requests or collaboration on backend and AI systems projects.
+
+## Optional
+
+- [LinkedIn](https://www.linkedin.com/in/nishantborkar): Work history and recommendations.
+- [LeetCode](https://leetcode.com/u/nishantborkar28): Competitive programming record (rating 2108, top 2%).
+- [X](https://x.com/nishantBuilds): Build-in-public posts.
+- [Sitemap](https://nishantbuilds.me/sitemap.xml): Every public page.

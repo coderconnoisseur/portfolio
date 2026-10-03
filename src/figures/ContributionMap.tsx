@@ -1,5 +1,5 @@
 import { useInView } from 'motion/react'
-import { useLayoutEffect, useMemo, useRef, useState, type PointerEvent } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { summarize, toWeeks, type Day } from '../lib/contributions.ts'
 import { formatDay, formatNumber, plural } from '../lib/format.ts'
 
@@ -95,15 +95,15 @@ export function ContributionMap({ days, cellMax }: { days: Day[]; cellMax?: numb
             style={{ gridTemplateColumns: columns }}
           >
             {weeks.map((week, col) => (
-              <div key={col} className="flex flex-col gap-[3px] sm:gap-1">
+              <div key={col} className="flex flex-col gap-[3px] sm:gap-1" style={{ '--col': col } as CSSProperties}>
                 {week.map((d, row) =>
                   d ? (
                     <span
                       key={d.date}
                       data-date={d.date}
                       data-count={d.count}
-                      className="heat-cell block aspect-square w-full rounded-[2px]"
-                      style={{ background: cellColor(d.level), animationDelay: `${col * 14 + row * 10}ms` }}
+                      data-level={d.level || undefined}
+                      className="heat-cell"
                     />
                   ) : (
                     <span key={`pad-${row}`} className="block aspect-square w-full" />

@@ -66,7 +66,7 @@ export function Stack() {
                     aria-hidden="true"
                     className="size-4 shrink-0 fill-current text-ink-3 transition-colors duration-200 group-hover:text-[var(--brand,var(--ink))]"
                   >
-                    <path d={t.icon.path} />
+                    <use href={`/images/brand-icons.svg#${t.icon.slug}`} />
                   </svg>
                 )}
                 {t.name}
