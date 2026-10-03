@@ -1,10 +1,12 @@
 import { ArrowUpIcon } from '@phosphor-icons/react'
 import { profile } from '../content/profile.ts'
-import { formatDuration } from '../lib/format.ts'
+import { formatDuration, ordinal } from '../lib/format.ts'
 import { usePageLoadTime } from '../lib/usePageLoadTime.ts'
+import { useVisitorNumber } from '../lib/useVisitorNumber.ts'
 
 export function Footer() {
   const loadMs = usePageLoadTime()
+  const visitor = useVisitorNumber()
   const year = new Date().getFullYear()
 
   return (
@@ -14,6 +16,11 @@ export function Footer() {
           © {year} {profile.name}. Banner: Friedrich’s <i>Wanderer above the Sea of Fog</i> (1818). Gophers by Renée French, CC BY 4.0.
         </p>
         <div className="flex items-center gap-5">
+          {visitor !== null && (
+            <p className="tabular">
+              You’re the <span className="text-ink-2">{ordinal(visitor)}</span> visitor
+            </p>
+          )}
           {/* Measured in the visitor's own browser: a small nod to the slow-path obsession. */}
           {loadMs !== null && (
             <p className="tabular" title="Largest Contentful Paint, measured in your browser">
