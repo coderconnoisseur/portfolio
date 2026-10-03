@@ -23,6 +23,17 @@ describe('prerendered homepage', () => {
     expect(text.length / html.length).toBeGreaterThan(0.055)
   })
 
+  // Reveal animations start hidden; the <noscript> styles in index.html must undo every one of them.
+  it('shows animated-in content when JavaScript is off', () => {
+    const noscript = shell.match(/<noscript>([\s\S]*?)<\/noscript>/)?.[1] ?? ''
+    const hiding = [...html.matchAll(/style="([^"]*(?:opacity:0|clip-path)[^"]*)"/g)].map((m) => m[1])
+    expect(hiding.length).toBeGreaterThan(0)
+    for (const style of hiding) expect(style.includes('opacity:0;') || style.includes('clip-path:inset(0 50%')).toBe(true)
+    expect(noscript).toContain("[style*='opacity:0'] { opacity: 1 !important; transform: none !important; }")
+    expect(noscript).toContain("[style*='clip-path:inset(0 50%'] { clip-path: none !important; }")
+    expect(noscript).toContain('.heat .heat-cell { opacity: 1 !important; }')
+  })
+
   it('gives every Organization in the JSON-LD an address and a contact point', () => {
     const orgs: Record<string, unknown>[] = []
     const walk = (n: unknown): void => {
