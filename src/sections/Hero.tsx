@@ -37,7 +37,12 @@ function Actions() {
           <ArrowUpRightIcon size={14} weight="bold" />
         </span>
       </a>
-      <a href={profile.resume} download="Nishant_Borkar_Resume.pdf" className="pill group">
+      <a
+        href={profile.resume}
+        download="Nishant_Borkar_Resume.pdf"
+        onClick={() => navigator.sendBeacon?.('/api/resume-download')}
+        className="pill group"
+      >
         <DownloadSimpleIcon
           size={16}
           weight="bold"
