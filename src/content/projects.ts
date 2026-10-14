@@ -41,7 +41,7 @@ export const projects: Project[] = [
     stack: ['Python', 'Flask', 'SQLAlchemy', 'ChromaDB', 'Google Vision'],
     links: [
       { kind: 'github', href: gh('Lumen') },
-      { kind: 'live', href: 'https://lumen-eta-ebon.vercel.app' },
+      { kind: 'live', href: 'https://lumen.nishantbuilds.me' },
     ],
     thumb: { kind: 'image', src: '/images/lumen.jpg', alt: 'LUMEN landing page: “Transform your Invoice Management”.' },
   },
